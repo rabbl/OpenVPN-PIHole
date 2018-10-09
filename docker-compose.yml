@@ -1,0 +1,53 @@
+version: '3'
+services:
+  openvpn:
+    image: kylemanna/openvpn
+    cap_add:
+    - NET_ADMIN
+    container_name: openvpn
+    ports:
+    - 1194:1194/udp
+    restart: always
+    volumes:
+    - ./openvpn/:/etc/openvpn
+    depends_on:
+    - startup
+    command: ["/etc/openvpn/wait.sh", "5", "ovpn_run"]
+
+  pihole:
+    image: diginc/pi-hole:debian
+    restart: always
+    cap_add:
+    - NET_ADMIN
+    container_name: pihole
+    dns:
+    - ${PIHOLE_DNS1}
+    - ${PIHOLE_DNS2}
+    ports:
+    - ${PIHOLE_HTTP_PORT}:80
+    environment:
+    - ServerIP=${PIHOLE_SERVER_IP}
+    - TZ=${PIHOLE_TIMEZONE}
+    - WEBPASSWORD=${PIHOLE_WEBPASSWORD}
+    - DNS1=${PIHOLE_DNS1}
+    - DNS2=${PIHOLE_DNS2}
+    - VIRTUAL_HOST={PIHOLE_VIRTUAL_HOST}
+    depends_on:
+    - openvpn
+
+  startup:
+    build: ./startup
+    container_name: startup
+    command: start.sh
+    restart: always
+    volumes:
+    - /var/run/docker.sock:/var/run/docker.sock
+    - ./openvpn/:/openvpn
+    - ./startup/start.sh:/usr/local/bin/start.sh
+
+  dyndns:
+    build: ./dyndns
+    container_name: dyndns
+    restart: always
+    volumes:
+    - ./dyndns/crontabs:/etc/crontabs

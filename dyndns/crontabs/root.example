@@ -1,0 +1,2 @@
+*/5 * * * * curl https://ddns_username:ddns_password@dyndns.kasserver.com 
+
