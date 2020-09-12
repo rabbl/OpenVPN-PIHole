@@ -35,19 +35,6 @@ $ cd OpenVPN-PIHole
 
 We need to configure the OpenVPN-Server as in the [instructions from kylemanna](https://github.com/kylemanna/docker-openvpn/blob/master/docs/docker-compose.md).  
 
-### Initialize the configuration files and certificates
-
-```
-$ docker-compose run --rm openvpn ovpn_genconfig -u udp://VPN.YOUR-SERVER-NAME.HERE
-$ docker-compose run --rm openvpn ovpn_initpki
-```
-
-### Fix ownerships (optional)
-
-```
-$ sudo chown -R $(whoami): ./openvpn-data
-```
-
 ### Copy and adapt the .env-file
 
 ```
@@ -64,6 +51,18 @@ The env-file has the following env-variables:
 * PIHOLE_VIRTUAL_HOST: the name of the virtual host, like defined with your dyndns-provider (e.g. pihole.example.org)
 * PIHOLE_HTTP_PORT: The port on the host-machine which is mapped to the server (e.g. 8080)
 
+### Initialize the configuration files and certificates
+
+```
+$ docker-compose run --rm openvpn ovpn_genconfig -u udp://VPN.YOUR-SERVER-NAME.HERE
+$ docker-compose run --rm openvpn ovpn_initpki
+```
+
+### Fix ownerships (optional)
+
+```
+$ sudo chown -R $(whoami): ./openvpn-data
+```
 
 ### Copy and adapt the crontab-file for dyndns updates
 
